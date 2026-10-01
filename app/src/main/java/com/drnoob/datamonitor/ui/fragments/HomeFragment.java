@@ -663,10 +663,12 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
 
         for (int i = 0; i < mList.size(); i++) {
             model = mList.get(i);
-            long mobileSent = (model.getTotalMobile() / 2l) * 1048576;
-            long mobileReceived = mobileSent;
-            long wifiSent = (model.getTotalWifi() / 2l) * 1048576;
-            long wifiReceived = wifiSent;
+            long mobileBytes = model.getTotalMobileBytes();
+            long mobileSent = mobileBytes / 2L;
+            long mobileReceived = mobileBytes - mobileSent;
+            long wifiBytes = model.getTotalWifiBytes();
+            long wifiSent = wifiBytes / 2L;
+            long wifiReceived = wifiBytes - wifiSent;
             String data = formatData(mobileSent, mobileReceived)[2];
             String wifi = formatData(wifiSent, wifiReceived)[2];
             switch (i) {

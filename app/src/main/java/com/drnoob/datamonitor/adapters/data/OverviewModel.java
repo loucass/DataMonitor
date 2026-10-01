@@ -22,29 +22,45 @@ package com.drnoob.datamonitor.adapters.data;
 import java.io.Serializable;
 
 public class OverviewModel implements Serializable {
-    private Long totalMobile, totalWifi;
+    private Float totalMobile, totalWifi;
 
     public OverviewModel() {
     }
 
-    public OverviewModel(Long totalMobile, Long totalWifi) {
-        this.totalMobile = totalMobile;
-        this.totalWifi = totalWifi;
+    public OverviewModel(Float totalMobile, Float totalWifi) {
+        this.totalMobile = totalMobile == null ? 0f : totalMobile;
+        this.totalWifi = totalWifi == null ? 0f : totalWifi;
     }
 
-    public Long getTotalMobile() {
+    /** Compat: old code stored truncated MB as Long; keep same unit. */
+    @Deprecated
+    public OverviewModel(Long totalMobile, Long totalWifi) {
+        this(totalMobile == null ? 0f : totalMobile.floatValue(),
+                totalWifi == null ? 0f : totalWifi.floatValue());
+    }
+
+    public Float getTotalMobile() {
         return totalMobile;
     }
 
-    public void setTotalMobile(Long totalMobile) {
+    public void setTotalMobile(Float totalMobile) {
         this.totalMobile = totalMobile;
     }
 
-    public Long getTotalWifi() {
+    public Float getTotalWifi() {
         return totalWifi;
     }
 
-    public void setTotalWifi(Long totalWifi) {
+    public void setTotalWifi(Float totalWifi) {
         this.totalWifi = totalWifi;
+    }
+
+    /** Bytes helpers for formatData(Long,Long) without round-trip loss. */
+    public long getTotalMobileBytes() {
+        return (long) (totalMobile * 1048576f);
+    }
+
+    public long getTotalWifiBytes() {
+        return (long) (totalWifi * 1048576f);
     }
 }

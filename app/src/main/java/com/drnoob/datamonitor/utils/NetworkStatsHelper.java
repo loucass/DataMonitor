@@ -130,7 +130,7 @@ public class NetworkStatsHelper {
         NetworkStats.Bucket bucket = new NetworkStats.Bucket();
 
         bucket = networkStatsManager.querySummaryForDevice(ConnectivityManager.TYPE_WIFI,
-                getSubscriberId(context),
+                null,
                 resetTimeMillis,
                 endTimeMillis);
 
@@ -447,42 +447,43 @@ public class NetworkStatsHelper {
     public static List<OverviewModel> updateOverview(Context context, int[] days) throws ParseException, RemoteException {
         NetworkStatsManager networkStatsManager = (NetworkStatsManager)
                 context.getSystemService(Context.NETWORK_STATS_SERVICE);
-        NetworkStats networkStats = null;
         NetworkStats.Bucket mobileBucket = new NetworkStats.Bucket();
         NetworkStats.Bucket wifiBucket = new NetworkStats.Bucket();
 
-        int year, month, day;
-        long resetTimeMillis = 0l,
-                endTimeMillis = 0l;
+        long resetTimeMillis = 0L,
+                endTimeMillis = 0L;
         Long sentMobile = 0L,
                 receivedMobile = 0L,
-                totalMobile = 0L,
                 sentWifi = 0L,
-                receivedWifi = 0L,
-                totalWifi = 0L;
+                receivedWifi = 0L;
+        Float totalMobileMb = 0f,
+                totalWifiMb = 0f;
 
-        Date date = new Date();
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
         SimpleDateFormat resetFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
         String resetTime, endTime;
         Date resetDate, endDate;
 
-        year = Integer.parseInt(yearFormat.format(date));
-        month = Integer.parseInt(monthFormat.format(date));
-        day = Integer.parseInt(dayFormat.format(date));
         List<OverviewModel> list = new ArrayList<>();
 
         for (int i = 0; i < days.length; i++) {
-            day = Integer.parseInt(dayFormat.format(date)) - i;
-            resetTime = context.getResources().getString(R.string.reset_time, year, month, day, 00, 00);
+            Calendar resetCal = Calendar.getInstance();
+            resetCal.add(Calendar.DAY_OF_MONTH, -i);
+            resetCal.set(Calendar.HOUR_OF_DAY, 0);
+            resetCal.set(Calendar.MINUTE, 0);
+            resetCal.set(Calendar.SECOND, 0);
+            resetCal.set(Calendar.MILLISECOND, 0);
+            Calendar endCal = (Calendar) resetCal.clone();
+            endCal.add(Calendar.DAY_OF_MONTH, 1);
+            resetTime = context.getResources().getString(R.string.reset_time,
+                    resetCal.get(Calendar.YEAR), resetCal.get(Calendar.MONTH) + 1,
+                    resetCal.get(Calendar.DAY_OF_MONTH), 00, 00);
             resetDate = resetFormat.parse(resetTime);
             resetTimeMillis = resetDate.getTime();
 
-            day = day + 1;
-            endTime = context.getResources().getString(R.string.reset_time, year, month, day, 00, 00);
+            endTime = context.getResources().getString(R.string.reset_time,
+                    endCal.get(Calendar.YEAR), endCal.get(Calendar.MONTH) + 1,
+                    endCal.get(Calendar.DAY_OF_MONTH), 00, 00);
             endDate = resetFormat.parse(endTime);
             endTimeMillis = endDate.getTime();
 
@@ -496,18 +497,18 @@ public class NetworkStatsHelper {
             Long txBytes = mobileBucket.getTxBytes();
             sentMobile = txBytes;
             receivedMobile = rxBytes;
-            totalMobile = ((sentMobile + receivedMobile) / 1024) / 1024;
+            totalMobileMb = (sentMobile + receivedMobile) / 1048576f;
 
             wifiBucket = networkStatsManager.querySummaryForDevice(ConnectivityManager.TYPE_WIFI,
-                    getSubscriberId(context),
+                    null,
                     resetTimeMillis,
                     endTimeMillis);
 
             receivedWifi = wifiBucket.getRxBytes();
             sentWifi = wifiBucket.getTxBytes();
-            totalWifi = ((sentWifi + receivedWifi) / 1024) / 1024;
+            totalWifiMb = (sentWifi + receivedWifi) / 1048576f;
 
-            list.add(i, new OverviewModel(totalMobile, totalWifi));
+            list.add(i, new OverviewModel(totalMobileMb, totalWifiMb));
         }
         Log.d(TAG, "updateOverview: " + list.size());
         Collections.reverse(list);
@@ -893,5 +894,52 @@ public class NetworkStatsHelper {
 
         }
         return new Long[]{resetTimeMillis, endTimeMillis};
+    }
+
+    // ---- Tier1 per-SIM overloads + reconciliation (fork addition) ----
+
+    public static Long[] getDeviceMobileDataUsage(Context context, String subscriberId,
+                                                  long startTimeMillis, long endTimeMillis)
+            throws RemoteException {
+        NetworkStatsManager nsm = (NetworkStatsManager)
+                context.getSystemService(Context.NETWORK_STATS_SERVICE);
+        NetworkStats.Bucket bucket;
+        try {
+            bucket = nsm.querySummaryForDevice(ConnectivityManager.TYPE_MOBILE,
+                    subscriberId, startTimeMillis, endTimeMillis);
+        } catch (SecurityException e) {
+            Log.d(TAG, "getDeviceMobile(subId): fallback null: " + e);
+            bucket = nsm.querySummaryForDevice(ConnectivityManager.TYPE_MOBILE,
+                    null, startTimeMillis, endTimeMillis);
+        }
+        long rx = Math.max(0L, bucket.getRxBytes());
+        long tx = Math.max(0L, bucket.getTxBytes());
+        return new Long[]{tx, rx, tx + rx};
+    }
+
+    public static Long[] getDeviceWifiDataUsage(Context context, String ignoredSubscriberId,
+                                                long startTimeMillis, long endTimeMillis)
+            throws RemoteException {
+        NetworkStatsManager nsm = (NetworkStatsManager)
+                context.getSystemService(Context.NETWORK_STATS_SERVICE);
+        NetworkStats.Bucket bucket = nsm.querySummaryForDevice(
+                ConnectivityManager.TYPE_WIFI, null, startTimeMillis, endTimeMillis);
+        long rx = Math.max(0L, bucket.getRxBytes());
+        long tx = Math.max(0L, bucket.getTxBytes());
+        return new Long[]{tx, rx, tx + rx};
+    }
+
+    /** #261 fix: WiFi with explicit window (plan/monthly/custom), subscriber always null. */
+    public static Long[] getDeviceWifiDataUsage(Context context, int session, int startDate)
+            throws ParseException, RemoteException {
+        Long resetTimeMillis = getTimePeriod(context, session, startDate)[0];
+        Long endTimeMillis = getTimePeriod(context, session, startDate)[1];
+        return getDeviceWifiDataUsage(context, (String) null, resetTimeMillis, endTimeMillis);
+    }
+
+    /** Device total minus summed per-UID buckets; clamps negatives. */
+    public static long reconcileDeviceTotal(long deviceTotal, long perUidSum) {
+        long other = deviceTotal - perUidSum;
+        return other < 0L ? 0L : other;
     }
 }
