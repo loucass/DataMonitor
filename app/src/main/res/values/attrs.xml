@@ -3,4 +3,17 @@
         <attr name="appWidgetBackgroundColor" format="color" />
         <attr name="appWidgetTextColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="UsageChartView">
+        <attr name="ucv_barWidth" format="dimension" />
+        <attr name="ucv_minBarHeight" format="dimension" />
+        <attr name="ucv_dotDiameter" format="dimension" />
+        <attr name="ucv_valueTextSize" format="dimension" />
+        <attr name="ucv_showValueLabels" format="boolean" />
+        <attr name="ucv_showDayLabels" format="boolean" />
+        <attr name="ucv_mobileStart" format="color" />
+        <attr name="ucv_mobileEnd" format="color" />
+        <attr name="ucv_wifiStart" format="color" />
+        <attr name="ucv_wifiEnd" format="color" />
+    </declare-styleable>
 </resources>
