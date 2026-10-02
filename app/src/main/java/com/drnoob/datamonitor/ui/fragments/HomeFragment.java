@@ -673,50 +673,50 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
             String wifi = formatData(wifiSent, wifiReceived)[2];
             switch (i) {
                 case 0:
-                    mMobileMon.setProgress((model.getTotalMobile() / 25) + 2);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
-                    mWifiMon.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileMon.setProgress((model.getTotalMobile() / 25) + 8);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
+                    mWifiMon.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileMon.setLabelText(data);
                     mWifiMon.setLabelText(wifi);
                     break;
 
                 case 1:
-                    mMobileTue.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiTue.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileTue.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiTue.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileTue.setLabelText(data);
                     mWifiTue.setLabelText(wifi);
                     break;
 
                 case 2:
-                    mMobileWed.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiWed.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileWed.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiWed.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileWed.setLabelText(data);
                     mWifiWed.setLabelText(wifi);
                     break;
 
                 case 3:
-                    mMobileThurs.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiThurs.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileThurs.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiThurs.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileThurs.setLabelText(data);
                     mWifiThurs.setLabelText(wifi);
                     break;
 
                 case 4:
-                    mMobileFri.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiFri.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileFri.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiFri.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileFri.setLabelText(data);
                     mWifiFri.setLabelText(wifi);
                     break;
 
                 case 5:
-                    mMobileSat.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiSat.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileSat.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiSat.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileSat.setLabelText(data);
                     mWifiSat.setLabelText(wifi);
                     break;
 
                 case 6:
-                    mMobileSun.setProgress((model.getTotalMobile() / 25) + 2);
-                    mWifiSun.setProgress((model.getTotalWifi() / 25) + 2);
+                    mMobileSun.setProgress((model.getTotalMobile() / 25) + 8);
+                    mWifiSun.setProgress((model.getTotalWifi() / 25) + 8);
                     mMobileSun.setLabelText(data);
                     mWifiSun.setLabelText(wifi);
                     break;
@@ -743,50 +743,50 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
                 String wifi = formatData(wifiSent, wifiReceived)[2];
                 switch (i) {
                     case 0:
-                        mMobileMon.setProgress((model.getTotalMobile() / 25) + 2);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
-                        mWifiMon.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileMon.setProgress((model.getTotalMobile() / 25) + 8);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
+                        mWifiMon.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileMon.setLabelText(data);
                         mWifiMon.setLabelText(wifi);
                         break;
 
                     case 1:
-                        mMobileTue.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiTue.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileTue.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiTue.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileTue.setLabelText(data);
                         mWifiTue.setLabelText(wifi);
                         break;
 
                     case 2:
-                        mMobileWed.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiWed.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileWed.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiWed.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileWed.setLabelText(data);
                         mWifiWed.setLabelText(wifi);
                         break;
 
                     case 3:
-                        mMobileThurs.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiThurs.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileThurs.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiThurs.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileThurs.setLabelText(data);
                         mWifiThurs.setLabelText(wifi);
                         break;
 
                     case 4:
-                        mMobileFri.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiFri.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileFri.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiFri.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileFri.setLabelText(data);
                         mWifiFri.setLabelText(wifi);
                         break;
 
                     case 5:
-                        mMobileSat.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiSat.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileSat.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiSat.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileSat.setLabelText(data);
                         mWifiSat.setLabelText(wifi);
                         break;
 
                     case 6:
-                        mMobileSun.setProgress((model.getTotalMobile() / 25) + 2);
-                        mWifiSun.setProgress((model.getTotalWifi() / 25) + 2);
+                        mMobileSun.setProgress((model.getTotalMobile() / 25) + 8);
+                        mWifiSun.setProgress((model.getTotalWifi() / 25) + 8);
                         mMobileSun.setLabelText(data);
                         mWifiSun.setLabelText(wifi);
                         break;
@@ -1038,6 +1038,19 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
                 e.printStackTrace();
             } catch (RemoteException e) {
                 e.printStackTrace();
+            } catch (SecurityException e) {
+                Log.d(TAG, "UpdateOverview: usage access not ready yet, showing empty: " + e);
+                mList = new ArrayList<>();
+                list = mList;
+            } catch (Exception e) {
+                Log.d(TAG, "UpdateOverview: unexpected: " + e);
+                e.printStackTrace();
+                if (mList == null) {
+                    mList = new ArrayList<>();
+                }
+                if (list == null) {
+                    list = mList;
+                }
             }
 
             return list;
