@@ -1,0 +1,98 @@
+name: Build Release APK
+
+# Signed production APK, built entirely on GitHub — no local Android SDK needed.
+# Trigger: Actions tab -> "Build Release APK" -> Run workflow (optionally on a tag).
+# Requires 4 repo secrets (Settings -> Secrets and variables -> Actions):
+#   KEYSTORE_BASE64    base64 of your .jks/.p12 (see release guide in SPEC.md)
+#   KEYSTORE_PASSWORD  keystore password
+#   KEY_ALIAS          key alias
+#   KEY_PASSWORD       key password
+# Output: Actions run -> Artifacts -> datamonitor-pro-release-apk (signed, installable).
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: build-release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (SDK tools need 17; Gradle 7.4 + AGP 7.3.1 run on it)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: 11076708
+          packages: platform-tools
+
+      - name: Install platform, build-tools and NDK (jni/ needs ndk-build)
+        run: |
+          sdkmanager --licenses > /dev/null <<<'y
+          y
+          y
+          y
+          y
+          y
+          y
+          y
+          '
+          sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "ndk;25.2.9519653"
+          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/25.2.9519653" >> "$GITHUB_ENV"
+
+      - name: Set up Gradle caching
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Restore keystore from secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Missing KEYSTORE_BASE64 secret. Add the 4 signing secrets first."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$GITHUB_WORKSPACE/app/release.keystore"
+          ls -lh "$GITHUB_WORKSPACE/app/release.keystore"
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build signed release APK
+        env:
+          KEYSTORE_FILE: release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --stacktrace --no-daemon
+
+      - name: Summarize APK
+        if: always()
+        run: |
+          echo "## Release APK build" >> "$GITHUB_STEP_SUMMARY"
+          ls -lh app/build/outputs/apk/release/ >> "$GITHUB_STEP_SUMMARY" || echo "no APK produced" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: datamonitor-pro-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+          retention-days: 90
