@@ -655,6 +655,20 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
         }
     }
 
+    /**
+     * Week-chart bar progress for a day total in MB.
+     * True zero (incl. sub-50KB system noise on idle transports) renders 0 so a
+     * wifi-only day never shows a phantom mobile bar; real tiny usage gets a
+     * minimum visible bar with its label. Caps at 100 (2.5GB saturates scale).
+     */
+    private static float chartProgress(Float totalMb) {
+        if (totalMb == null || totalMb <= 0.05f) {
+            return 0f;
+        }
+        float progress = (totalMb / 25f) + 8f;
+        return Math.min(progress, 100f);
+    }
+
     private static void resetOverview() {
         mOverviewLoading.setAlpha(0.0f);
         mOverview.setAlpha(1.0f);
@@ -673,50 +687,50 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
             String wifi = formatData(wifiSent, wifiReceived)[2];
             switch (i) {
                 case 0:
-                    mMobileMon.setProgress((model.getTotalMobile() / 25) + 8);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
-                    mWifiMon.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileMon.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiMon.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileMon.setLabelText(data);
                     mWifiMon.setLabelText(wifi);
                     break;
 
                 case 1:
-                    mMobileTue.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiTue.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileTue.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiTue.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileTue.setLabelText(data);
                     mWifiTue.setLabelText(wifi);
                     break;
 
                 case 2:
-                    mMobileWed.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiWed.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileWed.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiWed.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileWed.setLabelText(data);
                     mWifiWed.setLabelText(wifi);
                     break;
 
                 case 3:
-                    mMobileThurs.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiThurs.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileThurs.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiThurs.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileThurs.setLabelText(data);
                     mWifiThurs.setLabelText(wifi);
                     break;
 
                 case 4:
-                    mMobileFri.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiFri.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileFri.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiFri.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileFri.setLabelText(data);
                     mWifiFri.setLabelText(wifi);
                     break;
 
                 case 5:
-                    mMobileSat.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiSat.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileSat.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiSat.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileSat.setLabelText(data);
                     mWifiSat.setLabelText(wifi);
                     break;
 
                 case 6:
-                    mMobileSun.setProgress((model.getTotalMobile() / 25) + 8);
-                    mWifiSun.setProgress((model.getTotalWifi() / 25) + 8);
+                    mMobileSun.setProgress(chartProgress(model.getTotalMobile()));
+                    mWifiSun.setProgress(chartProgress(model.getTotalWifi()));
                     mMobileSun.setLabelText(data);
                     mWifiSun.setLabelText(wifi);
                     break;
@@ -743,50 +757,50 @@ public class HomeFragment extends Fragment implements View.OnLongClickListener {
                 String wifi = formatData(wifiSent, wifiReceived)[2];
                 switch (i) {
                     case 0:
-                        mMobileMon.setProgress((model.getTotalMobile() / 25) + 8);  // 500 MB is 20 in the progressBar, so divided by 25. Added 2 to fix margin issue
-                        mWifiMon.setProgress((model.getTotalWifi() / 25) + 8);
+mMobileMon.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiMon.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileMon.setLabelText(data);
                         mWifiMon.setLabelText(wifi);
                         break;
 
                     case 1:
-                        mMobileTue.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiTue.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileTue.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiTue.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileTue.setLabelText(data);
                         mWifiTue.setLabelText(wifi);
                         break;
 
                     case 2:
-                        mMobileWed.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiWed.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileWed.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiWed.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileWed.setLabelText(data);
                         mWifiWed.setLabelText(wifi);
                         break;
 
                     case 3:
-                        mMobileThurs.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiThurs.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileThurs.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiThurs.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileThurs.setLabelText(data);
                         mWifiThurs.setLabelText(wifi);
                         break;
 
                     case 4:
-                        mMobileFri.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiFri.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileFri.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiFri.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileFri.setLabelText(data);
                         mWifiFri.setLabelText(wifi);
                         break;
 
                     case 5:
-                        mMobileSat.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiSat.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileSat.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiSat.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileSat.setLabelText(data);
                         mWifiSat.setLabelText(wifi);
                         break;
 
                     case 6:
-                        mMobileSun.setProgress((model.getTotalMobile() / 25) + 8);
-                        mWifiSun.setProgress((model.getTotalWifi() / 25) + 8);
+                        mMobileSun.setProgress(chartProgress(model.getTotalMobile()));
+                        mWifiSun.setProgress(chartProgress(model.getTotalWifi()));
                         mMobileSun.setLabelText(data);
                         mWifiSun.setLabelText(wifi);
                         break;
