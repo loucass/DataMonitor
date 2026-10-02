@@ -40,7 +40,7 @@
         style="@style/Widget.Material3.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemActiveIndicatorColor="?attr/colorSecondaryContainer"
+        app:itemRippleColor="@null"
         app:labelVisibilityMode="labeled"
         app:itemTextAppearanceInactive="@style/TextAppearance.Material3.BodySmall"
         app:layout_constraintBottom_toBottomOf="parent"

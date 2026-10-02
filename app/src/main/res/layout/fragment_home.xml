@@ -23,7 +23,7 @@
                 android:layout_marginStart="@dimen/margin_mid_large"
                 android:layout_marginTop="@dimen/margin_large"
                 android:text="@string/heading_data_usage_today"
-                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintEnd_toStartOf="@+id/home_data_remaining"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -366,8 +366,7 @@
                     android:layout_marginStart="@dimen/margin_mid_large"
                     android:gravity="start|center_vertical"
                     android:text="@string/heading_week_overview"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                    android:textColor="?attr/colorTertiary"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     app:layout_constraintEnd_toStartOf="@+id/overview_refresh"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
