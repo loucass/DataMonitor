@@ -50,6 +50,13 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/app_usage_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_extra_small"
+            android:textColor="@color/text_secondary" />
+
         <com.skydoves.progressview.ProgressView
             android:id="@+id/progress"
             android:layout_width="match_parent"

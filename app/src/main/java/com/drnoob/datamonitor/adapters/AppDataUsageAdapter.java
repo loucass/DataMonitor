@@ -136,6 +136,8 @@ public class AppDataUsageAdapter extends RecyclerView.Adapter<AppDataUsageAdapte
 
         holder.mAppName.setText(model.getAppName());
         holder.mDataUsage.setText(totalDataUsage);
+        String[] detailParts = formatData(model.getSentMobile(), model.getReceivedMobile());
+        holder.mUsageDetail.setText("\u2191 " + detailParts[0] + " • \u2193 " + detailParts[1]);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -468,6 +470,7 @@ public class AppDataUsageAdapter extends RecyclerView.Adapter<AppDataUsageAdapte
         private final ImageView mAppIcon;
         private final TextView mAppName;
         private final TextView mDataUsage;
+        private final TextView mUsageDetail;
         private final ProgressView mProgress;
 
         public AppDataUsageViewHolder(@NonNull View itemView) {
@@ -475,6 +478,7 @@ public class AppDataUsageAdapter extends RecyclerView.Adapter<AppDataUsageAdapte
             mAppIcon = itemView.findViewById(R.id.app_icon);
             mAppName = itemView.findViewById(R.id.app_name);
             mDataUsage = itemView.findViewById(R.id.data_usage);
+            mUsageDetail = itemView.findViewById(R.id.app_usage_detail);
             mProgress = itemView.findViewById(R.id.progress);
         }
     }
