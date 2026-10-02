@@ -27,6 +27,11 @@ import static com.drnoob.datamonitor.core.Values.DATA_RESET_CUSTOM;
 import static com.drnoob.datamonitor.core.Values.DATA_RESET_DATE;
 import static com.drnoob.datamonitor.core.Values.DATA_USAGE_SESSION;
 import static com.drnoob.datamonitor.core.Values.DATA_USAGE_TYPE;
+import static com.drnoob.datamonitor.core.Values.APP_USAGE_FILTER_SESSION;
+import static com.drnoob.datamonitor.core.Values.APP_USAGE_FILTER_TYPE;
+import static com.drnoob.datamonitor.core.Values.APP_USAGE_SORT;
+import static com.drnoob.datamonitor.core.Values.APP_USAGE_SORT_NAME;
+import static com.drnoob.datamonitor.core.Values.APP_USAGE_SORT_USAGE;
 import static com.drnoob.datamonitor.core.Values.EXTRA_IS_WEEK_DAY_VIEW;
 import static com.drnoob.datamonitor.core.Values.EXTRA_WEEK_DAY;
 import static com.drnoob.datamonitor.core.Values.GENERAL_FRAGMENT_ID;
@@ -92,6 +97,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +120,7 @@ public class AppDataUsageFragment extends Fragment {
     private static boolean isWeekDayView;
     private static String totalDataUsage;
     private static int selectedSession, selectedType;
+    private static String selectedSort;
     private ActivityResultLauncher<Intent> customSessionLauncher;
 
     public static MutableLiveData<Pair<Long, Long>> customFilter = new MutableLiveData<>();
@@ -187,6 +195,20 @@ public class AppDataUsageFragment extends Fragment {
 
         setSession(session);
         setType(type);
+        if (!fromHome && !isWeekDayView) {
+            // Remembered filter wins over the default when opened normally (#206).
+            android.content.SharedPreferences remembered =
+                    androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext());
+            int savedSession = remembered.getInt(APP_USAGE_FILTER_SESSION, -1);
+            int savedType = remembered.getInt(APP_USAGE_FILTER_TYPE, -1);
+            if (savedSession != -1) {
+                setSession(savedSession);
+            }
+            if (savedType != -1) {
+                setType(savedType);
+            }
+            selectedSort = remembered.getString(APP_USAGE_SORT, APP_USAGE_SORT_USAGE);
+        }
         mTotalUsage.setText("...");
 
         Log.d(TAG, "onCreateView: " + getRefreshAppDataUsage() );
@@ -217,6 +239,7 @@ public class AppDataUsageFragment extends Fragment {
 
                 ChipGroup sessionGroup = dialogView.findViewById(R.id.session_group);
                 ChipGroup typeGroup = dialogView.findViewById(R.id.type_group);
+                ChipGroup sortGroup = dialogView.findViewById(R.id.sort_group);
 
                 ConstraintLayout footer = dialogView.findViewById(R.id.footer);
                 TextView cancel = footer.findViewById(R.id.cancel);
@@ -319,6 +342,12 @@ public class AppDataUsageFragment extends Fragment {
                         break;
                 }
 
+                if (APP_USAGE_SORT_NAME.equals(getSort())) {
+                    sortGroup.check(R.id.sort_name);
+                } else {
+                    sortGroup.check(R.id.sort_usage);
+                }
+
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -377,6 +406,18 @@ public class AppDataUsageFragment extends Fragment {
                                 selectedType = TYPE_MOBILE_DATA;
                                 break;
                         }
+
+                        if (sortGroup.getCheckedChipId() == R.id.sort_name) {
+                            selectedSort = APP_USAGE_SORT_NAME;
+                        } else {
+                            selectedSort = APP_USAGE_SORT_USAGE;
+                        }
+                        androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+                                .edit()
+                                .putInt(APP_USAGE_FILTER_SESSION, selectedSession)
+                                .putInt(APP_USAGE_FILTER_TYPE, selectedType)
+                                .putString(APP_USAGE_SORT, selectedSort)
+                                .apply();
 
                         if (!MainActivity.isDataLoading()) {
                             refreshData();
@@ -487,12 +528,15 @@ public class AppDataUsageFragment extends Fragment {
     public static void onDataLoaded(Context context) {
         try {
             totalDataUsage = getTotalDataUsage(context);
-            mTotalUsage.setText(context.getString(R.string.total_usage, totalDataUsage));
+            mTotalUsage.setText(context.getString(R.string.total_usage, totalDataUsage)
+                    + " • " + sessionLabel(context, getSession())
+                    + " • " + typeLabel(context, getType()));
 
         }
         catch (ParseException | RemoteException e) {
             e.printStackTrace();
         }
+        applySort();
         Log.d(TAG, "onDataLoaded: " + mSystemList.size() + " system");
         Log.d(TAG, "onDataLoaded: " + mList.size() + " user");
         mAdapter = new AppDataUsageAdapter(mList, mContext);
@@ -512,6 +556,61 @@ public class AppDataUsageFragment extends Fragment {
         }
         if (!fromHome) {
             setRefreshAppDataUsage(false);
+        }
+    }
+
+    private static String sessionLabel(Context context, int session) {
+        switch (session) {
+            case SESSION_YESTERDAY:
+                return context.getString(R.string.label_yesterday);
+            case SESSION_THIS_MONTH:
+                return context.getString(R.string.label_this_month);
+            case SESSION_LAST_MONTH:
+                return context.getString(R.string.label_last_month);
+            case SESSION_THIS_YEAR:
+                return context.getString(R.string.label_this_year);
+            case SESSION_ALL_TIME:
+                return context.getString(R.string.label_all_time);
+            case SESSION_CUSTOM:
+                return context.getString(R.string.label_current_plan);
+            case SESSION_CUSTOM_FILTER:
+                String date = customFilterDate.getValue();
+                return date == null ? context.getString(R.string.label_today) : date;
+            case SESSION_TODAY:
+            default:
+                return context.getString(R.string.label_today);
+        }
+    }
+
+    private static String typeLabel(Context context, int type) {
+        if (type == TYPE_WIFI) {
+            return context.getString(R.string.label_wifi);
+        }
+        return context.getString(R.string.label_mobile_data);
+    }
+
+    private static void applySort() {
+        if (mList == null || mList.size() < 2) {
+            return;
+        }
+        if (APP_USAGE_SORT_NAME.equals(getSort())) {
+            Collections.sort(mList, new Comparator<AppDataUsageModel>() {
+                @Override
+                public int compare(AppDataUsageModel a, AppDataUsageModel b) {
+                    String left = a.getAppName() == null ? "" : a.getAppName();
+                    String right = b.getAppName() == null ? "" : b.getAppName();
+                    return left.compareToIgnoreCase(right);
+                }
+            });
+        } else {
+            Collections.sort(mList, new Comparator<AppDataUsageModel>() {
+                @Override
+                public int compare(AppDataUsageModel a, AppDataUsageModel b) {
+                    long left = a.getSentMobile() + a.getReceivedMobile();
+                    long right = b.getSentMobile() + b.getReceivedMobile();
+                    return Long.compare(right, left);
+                }
+            });
         }
     }
 
@@ -550,6 +649,17 @@ public class AppDataUsageFragment extends Fragment {
             selectedType = TYPE_MOBILE_DATA;
         }
         return selectedType;
+    }
+
+    public static String getSort() {
+        if (selectedSort == null) {
+            selectedSort = APP_USAGE_SORT_USAGE;
+        }
+        return selectedSort;
+    }
+
+    private static void setSort(String sort) {
+        selectedSort = sort;
     }
 
     private static void setSession(int session) {

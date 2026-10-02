@@ -34,6 +34,9 @@
     <string name="label_this_year">This year</string>
     <string name="label_all_time">All time</string>
     <string name="title_app_data_usage_type">Select type</string>
+    <string name="title_app_data_usage_sort">Sort by</string>
+    <string name="label_sort_usage">Most used</string>
+    <string name="label_sort_name">Name</string>
     <string name="label_mobile_data">Mobile data</string>
     <string name="label_wifi">Wi-Fi</string>
     <string name="title_data_usage">Data usage</string>

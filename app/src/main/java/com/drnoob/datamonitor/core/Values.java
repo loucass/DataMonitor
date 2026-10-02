@@ -193,4 +193,10 @@ public class Values {
     public static final String DATA_QUOTA_SCHEDULED_RESET = "quota_scheduled_reset";
     public static final String DATA_QUOTA_PERFORMED_RESET = "quota_performed_reset";
 
+    public static final String APP_USAGE_FILTER_SESSION = "app_usage_filter_session";
+    public static final String APP_USAGE_FILTER_TYPE = "app_usage_filter_type";
+    public static final String APP_USAGE_SORT = "app_usage_sort";
+    public static final String APP_USAGE_SORT_USAGE = "usage";
+    public static final String APP_USAGE_SORT_NAME = "name";
+
 }

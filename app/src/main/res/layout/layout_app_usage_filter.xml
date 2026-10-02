@@ -203,6 +203,53 @@
 
         </com.google.android.material.chip.ChipGroup>
 
+        <TextView
+            android:id="@+id/sort_group_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_large"
+            android:layout_marginStart="@dimen/margin_mid_large"
+            android:layout_marginEnd="@dimen/margin_mid_large"
+            android:text="@string/title_app_data_usage_sort"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/type_group" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sort_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_small"
+            android:layout_marginStart="@dimen/margin_mid_large"
+            android:layout_marginEnd="@dimen/margin_mid_large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sort_group_title"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sort_usage"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_default"
+                android:text="@string/label_sort_usage"
+                app:chipCornerRadius="@dimen/radius_large"
+                app:chipStrokeWidth="0dp"
+                app:chipBackgroundColor="@color/bottom_sheet_chip_selector"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sort_name"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_default"
+                android:text="@string/label_sort_name"
+                app:chipCornerRadius="@dimen/radius_large"
+                app:chipStrokeWidth="0dp"
+                app:chipBackgroundColor="@color/bottom_sheet_chip_selector"/>
+
+        </com.google.android.material.chip.ChipGroup>
+
         <include
             android:id="@+id/footer"
             layout="@layout/bottom_sheet_footer"
@@ -212,7 +259,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/type_group" />
+            app:layout_constraintTop_toBottomOf="@+id/sort_group" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
