@@ -236,7 +236,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             } else {
-                onResume();
+                // Permission gap (e.g. AppOps not yet propagated after grant): never leave a
+                // content-less Main on screen — route back to Setup instead of a blank window.
+                startActivity(new Intent(this, SetupActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        .putExtra(SETUP_VALUE, USAGE_ACCESS_DISABLED));
+                finish();
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();

@@ -201,6 +201,9 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (isFinishing()) {
+            return;
+        }
         try {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 if (isUsageAccessGranted(this) && isReadPhoneStateGranted(this)) {
@@ -615,6 +618,9 @@ public class SetupActivity extends AppCompatActivity {
                 }
             }
             else {
+                if (getActivity() == null || getActivity().isFinishing()) {
+                    return;
+                }
                 try {
                     if (isUsageAccessGranted(getContext())) {
                         startActivity(new Intent(getContext(), MainActivity.class));
